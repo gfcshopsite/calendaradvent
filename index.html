@@ -5,21 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendario Giornaliero</title>
     <style>
-        /* Sfondo */
         body {
-    background-image: url('background.png');
-    background-size: cover;
-    background-position: center;
-    min-height: 100vh;
-    font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
-    padding: 20px;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: auto;
-}
-        /* Titoli */
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: auto;
+        }
+
         .title {
             color: #FFD700;
             font-size: 2.5em;
@@ -36,72 +35,64 @@
             text-align: center;
         }
 
-        /* Griglia calendario */
         .calendar-container {
             width: 100%;
             max-width: 900px;
             margin: 0 auto;
-            
         }
 
         .calendar-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Modifica responsiva con grid adattabile */
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             gap: 10px;
         }
 
-        /* Casella del calendario con colore doppio (gradiente natalizio) */
-    .calendar-box {
-    background: linear-gradient(135deg, #FF0000, #008000); /* Gradiente da rosso a verde */
-    border-radius: 10px;
-    aspect-ratio: 1;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3em;
-    font-weight: bold;
-    color: #fff; /* Colore del testo bianco per risaltare */
-    border: 2px solid #ddd; /* Aggiunto bordo chiaro */
-    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Effetto hover con un gradiente animato natalizio */
-    .calendar-box:hover {
-    transform: scale(1.05);
-    background: linear-gradient(135deg, #FFD700, #FF4500); /* Gradiente da oro a rosso aranciato */
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Casella aperta (cliccata) con gradiente dorato */
-    .calendar-box.opened {
-    background: linear-gradient(135deg, #FFD700, #FF8C00); /* Gradiente oro-arancione */
-    color: white;
-    border-color: #FF8C00; /* Bordo arancione per l'effetto clic */
-}
-
-/* Aggiunta decorazioni natalizie */
-    .calendar-box::before {
-    content: "";
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 30px;
-    height: 30px;
-    background: url('https://png.pngtree.com/png-vector/20221209/ourmid/pngtree-red-christmas-hat-png-image_6517201.png') no-repeat center;
-    background-size: contain;
-    opacity: 0.7;
-}
-
-
-        .calendar-box:hover {
-            transform: scale(1.1);
+        .calendar-box {
+            border-radius: 10px;
+            aspect-ratio: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #fff;
+            border: 2px solid #ddd;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-size: 110% ;
+            background-position: center;
         }
 
-        /* Effetto neve */
+        /* Overlay scuro per rendere il testo più leggibile */
+        .calendar-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .calendar-box span {
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .calendar-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .calendar-box.opened {
+            border-color: #FFD700;
+        }
+
         .snowflake {
             position: absolute;
             top: -10px;
@@ -123,7 +114,6 @@
             }
         }
 
-        /* Finestra Popup per Immagine e Link */
         .popup {
             display: none;
             position: fixed;
@@ -138,6 +128,7 @@
             width: 80%;
             max-width: 600px;
             text-align: center;
+            z-index: 1000;
         }
 
         .popup img {
@@ -163,7 +154,6 @@
             cursor: pointer;
         }
 
-        /* Media Query per dispositivi mobili */
         @media (max-width: 768px) {
             .title {
                 font-size: 2em;
@@ -192,7 +182,6 @@
         <div class="calendar-grid"></div>
     </div>
 
-    <!-- Popup Placeholder -->
     <div class="popup" id="popup">
         <span class="popup-close" onclick="closePopup()">&times;</span>
         <img id="popupImage" src="" alt="Immagine sorpresa">
@@ -202,33 +191,152 @@
     <script>
         // Dati modificabili: aggiorna i contenuti qui
         const boxContents = [
-            { link: "", text: "1 DICEMBRE", image: "https://media.discordapp.net/attachments/1303649795130396733/1307817298664493156/Progetto_senza_titolo1.png?ex=673da986&is=673c5806&hm=aa9a1416baa50f6e2c19744114c1a9df6a6848665cee095afa8c871fd60a16bc&=&format=webp&quality=lossless" },
-            { link: "https://example.com/2", text: "2 DICEMBRE", image: "https://cdn.discordapp.com/attachments/1303649795130396733/1307817298664493156/Progetto_senza_titolo1.png?ex=673da986&is=673c5806&hm=aa9a1416baa50f6e2c19744114c1a9df6a6848665cee095afa8c871fd60a16bc&" },
-            { link: "https://example.com/3", text: "3 DICEMBRE", image: "" },
-            { link: "https://example.com/4", text: "4 DICEMBRE", image: "" },
-            { link: "https://example.com/5", text: "5 DICEMBRE", image: "" },
-            { link: "https://example.com/6", text: "6 DICEMBRE", image: "" },
-            { link: "https://example.com/7", text: "7 DICEMBRE", image: "" },
-            { link: "https://example.com/8", text: "8 DICEMBRE", image: "" },
-            { link: "https://example.com/9", text: "9 DICEMBRE", image: "" },
-            { link: "https://example.com/10", text: "10 DICEMBRE", image: "" },
-            { link: "https://example.com/11", text: "11 DICEMBRE", image: "" },
-            { link: "https://example.com/12", text: "12 DICEMBRE", image: "" },
-            { link: "https://example.com/13", text: "13 DICEMBRE", image: "" },
-            { link: "https://example.com/14", text: "14 DICEMBRE", image: "" },
-            { link: "https://example.com/15", text: "15 DICEMBRE", image: "" },
-            { link: "https://example.com/16", text: "16 DICEMBRE", image: "" },
-            { link: "https://example.com/17", text: "17 DICEMBRE", image: "" },
-            { link: "https://example.com/18", text: "18 DICEMBRE", image: "" },
-            { link: "https://example.com/19", text: "19 DICEMBRE", image: "" },
-            { link: "https://example.com/20", text: "20 DICEMBRE", image: "" },
-            { link: "https://example.com/21", text: "21 DICEMBRE", image: "" },
-            { link: "https://example.com/22", text: "22 DICEMBRE", image: "" },
-            { link: "https://example.com/23", text: "23 DICEMBRE", image: "" },
-            { link: "https://example.com/24", text: "24 DICEMBRE", image: "" },
-        ];
+    {
+        link: "https://example.com/1",
+        text: "1 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image1.jpg"
+    },
+    {
+        link: "https://example.com/2",
+        text: "2 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image2.jpg"
+    },
+    {
+        link: "https://example.com/3",
+        text: "3 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image3.jpg"
+    },
+    {
+        link: "https://example.com/4",
+        text: "4 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image4.jpg"
+    },
+    {
+        link: "https://example.com/5",
+        text: "5 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image5.jpg"
+    },
+    {
+        link: "https://example.com/6",
+        text: "6 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image6.jpg"
+    },
+    {
+        link: "https://example.com/7",
+        text: "7 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image7.jpg"
+    },
+    {
+        link: "https://example.com/8",
+        text: "8 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image8.jpg"
+    },
+    {
+        link: "https://example.com/9",
+        text: "9 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image9.jpg"
+    },
+    {
+        link: "https://example.com/10",
+        text: "10 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image10.jpg"
+    },
+    {
+        link: "https://example.com/11",
+        text: "11 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image11.jpg"
+    },
+    {
+        link: "https://example.com/12",
+        text: "12 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image12.jpg"
+    },
+    {
+        link: "https://example.com/13",
+        text: "13 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image13.jpg"
+    },
+    {
+        link: "https://example.com/14",
+        text: "14 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image14.jpg"
+    },
+    {
+        link: "https://example.com/15",
+        text: "15 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image15.jpg"
+    },
+    {
+        link: "https://example.com/16",
+        text: "16 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image16.jpg"
+    },
+    {
+        link: "https://example.com/17",
+        text: "17 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image17.jpg"
+    },
+    {
+        link: "https://example.com/18",
+        text: "18 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image18.jpg"
+    },
+    {
+        link: "https://example.com/19",
+        text: "19 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image19.jpg"
+    },
+    {
+        link: "https://example.com/20",
+        text: "20 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image20.jpg"
+    },
+    {
+        link: "https://example.com/21",
+        text: "21 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image21.jpg"
+    },
+    {
+        link: "https://example.com/22",
+        text: "22 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image22.jpg"
+    },
+    {
+        link: "https://example.com/23",
+        text: "23 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image23.jpg"
+    },
+    {
+        link: "https://example.com/24",
+        text: "24 DICEMBRE",
+        image: "",
+        backgroundImage: "https://example.com/image24.jpg"
+    }
+];
 
-        // Funzione per generare i fiocchi di neve
         function createSnowflakes() {
             const numSnowflakes = 100;
             const snowContainer = document.body;
@@ -237,13 +345,12 @@
                 snowflake.classList.add('snowflake');
                 snowflake.textContent = '❄';
                 snowflake.style.left = `${Math.random() * 100}vw`;
-                snowflake.style.animationDuration = `${Math.random() * 3 + 2}s`; 
-                snowflake.style.animationDelay = `${Math.random() * 5}s`; 
+                snowflake.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
                 snowContainer.appendChild(snowflake);
             }
         }
 
-        // Funzione per aprire la finestra popup
         function openPopup(link, image) {
             const popup = document.getElementById('popup');
             const popupImage = document.getElementById('popupImage');
@@ -255,22 +362,29 @@
             popup.style.display = 'block';
         }
 
-        // Funzione per chiudere la finestra popup
         function closePopup() {
             document.getElementById('popup').style.display = 'none';
         }
 
-        // Creazione della griglia del calendario
         const calendarGrid = document.querySelector('.calendar-grid');
         boxContents.forEach((box, index) => {
             const div = document.createElement('div');
             div.classList.add('calendar-box');
-            div.textContent = box.text;
+            
+            // Aggiunge l'immagine di sfondo alla casella
+            if (box.backgroundImage) {
+                div.style.backgroundImage = `url('${box.backgroundImage}')`;
+            }
+            
+            // Aggiunge il testo in uno span per il corretto posizionamento sopra l'overlay
+            const span = document.createElement('span');
+            span.textContent = box.text;
+            div.appendChild(span);
+            
             div.onclick = () => openPopup(box.link, box.image);
             calendarGrid.appendChild(div);
         });
 
-        // Avvia la funzione per la neve
         createSnowflakes();
     </script>
 </body>
